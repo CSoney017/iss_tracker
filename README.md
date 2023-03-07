@@ -17,7 +17,7 @@ Once that is completed, run the following command in the same directory as the i
 `flask --app iss_tracker --debug run`
 
 In another terminal, different functions can be called using the following commands:
-`
+```
 curl localhost:5000/
 curl localhost:5000/epochs
 curl localhost:5000/epochs/<epoch>
@@ -28,10 +28,10 @@ curl localhost:5000/metadata
 curl localhost:5000/help
 curl localhost:5000/delete-data
 curl localhost:5000/post-data
-`
+```
 Results:
 The first route `curl localhost:5000/` will return all the data in the XML file as a dictionary. Below is an example of what the data returned should look like:
-`
+```
  {
                 "EPOCH": "2023-063T12:00:00.000Z",
                 "X": {
@@ -79,9 +79,9 @@ The first route `curl localhost:5000/` will return all the data in the XML file 
     }
   }
 }
-`
+```
 The second route `curl localhost:5000/epochs` will only display only all the epochs:
-`
+```
 "2023-063T11:19:00.000Z",
   "2023-063T11:23:00.000Z",
   "2023-063T11:27:00.000Z",
@@ -94,9 +94,9 @@ The second route `curl localhost:5000/epochs` will only display only all the epo
   "2023-063T11:55:00.000Z",
   "2023-063T11:59:00.000Z",
   "2023-063T12:00:00.000Z"
-`
+```
 The third route `curl localhost:5000/epochs/<epoch>` will return the data for one specific epoch data block. When using the command `curl localhost:5000/epochs/2023-063T11:27:00.000Z`, the following code block is returned:
-`
+```
 {
   "EPOCH": "2023-063T11:27:00.000Z",
   "X": -5254.8392497479,
@@ -106,7 +106,7 @@ The third route `curl localhost:5000/epochs/<epoch>` will return the data for on
   "Z": 2961.7924901551,
   "Z_DOT": 5.00312313061336
 }
-`
+```
 The route `curl localhost:5000/epochs/<epoch>/speed` will return the velocity calculated at the specific epoch. Using the command  `curl localhost:5000/epochs/2023-063T11:27:00.000Z/speed`, the following is returned: 7.668050051579589
 `curl localhost:5000/help` will return comments detailing each route and its purpose, similar to this README. 
 `curl localhost:5000/post-data` will return the entire data set taken from the XML file, while `curl localhost:5000/delete-data` will delete the data.
