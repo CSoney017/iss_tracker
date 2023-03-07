@@ -21,7 +21,6 @@ def get_data() -> dict:
   """
 
   response = requests.get(url = 'https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
-  global data
   data = xmltodict.parse(response.text) # do I really need to do this again? shouldn't the data already be stored?
   return data
 
@@ -56,8 +55,9 @@ def epochs_only() -> list:
  # data is now modified to only containg the epochs and position vectors
  data = iss_data['ndm']['oem']['body']['segment']['data']['stateVector']
 
+
  offset = request.args.get('offset', 0) # so what is wrong with this line?
- limit = request.args.get('limit', len(iss_data))
+ limit = request.args.get('limit', len(data))
 
  if offset:
    try:
@@ -75,6 +75,7 @@ def epochs_only() -> list:
  for ii in data:
    while (count <= limit):
     # ii = int(ii)
+    print(ii)
     epochs.append(ii['EPOCH']) # inserting epoch into list
     # epochs is a list; append is a function for a list
     # ii should be a str but to append you need a int?
@@ -185,14 +186,38 @@ def comment_list() -> list:
  """
 
  iss_data = get_data()
- data = iss_data['ndm']['oem']['body']['segment']['data']
+ data = iss_data['ndm']['oem']['body']['segment']['data']['COMMENT']
 
- comments = [] # intializing empty list to store all the comments
+ return data
 
- for ii in data:
-   comments.append(ii['COMMENT'])
+@app.route('/header', methods = ['GET'])
+def header_only() -> dict:
+ """
+ Returns the header dictionary object from ISS data
+ Args:
+   none
+ Returns:
+   headers(dict): dictionary containing data from header section of ISS data
+ """
+ iss_data = get_data()
+ data = iss_data['ndm']['oem']['header']
 
- return comments
+ return data
+
+@app.route('/metadata', methods = ['GET'])
+def metadata() -> dict:
+ """
+ Returns the metadata dictionary from the ISS data
+ Args:
+   none
+ Returns:
+   iss_data(dict): dictionary containing the metadata data
+ """
+
+ iss_data = get_data()
+ iss_data = iss_data['ndm']['oem']['body']['segment']['metadata']
+
+ return iss_data
 
 if __name__ == '__main__':
    app.run(debug = True, host = '0.0.0.0')
