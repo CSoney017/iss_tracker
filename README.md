@@ -1,13 +1,12 @@
 # Real-Time Data: objective:
 The purpose of this homework assignment is to build a Flask application for querying and returning interesting information from the ISS data set. This project contains this README file and the python script 'iss_tracker.py'.
 
-Flask:
-Flask in an application that receives a request from a client which the framework recognizes and runs calculations which will return a result.
+ework recognizes and runs calculations which will return a result.
 
-Accessing Data:
+## Accessing Data:
 The data used for this project was taken from the ISS Trajectory Data website: https://spotthestation.nasa.gov/trajectory_data.cfm website. It is accessed in the XML format. The data is categorized into the position and velocity depending on the epochs.
 
-Running the App:
+## Running the App:
 To run this app, please ensure that you have the requests, flask, and xmltodict libraries installed. This can be done using pip3 install --user <library_name>
 
 Once that is completed, run the following command in the same directory as the iss_tracker.py file:
@@ -16,13 +15,14 @@ flask --app iss_tracker --debug run
 
 In another terminal, different functions can be called using the following commands:
 
-curl localhost:5000/
-curl localhost:5000/epochs
-curl localhost:5000/epochs/<epoch>
-curl localhost:5000/epochs/<epoch>/speed
-Results:
-The first route curl localhost:5000/ will return all the data in the XML file as a dictionary. Below is an example of what the data returned should look like:
+`curl localhost:5000/`
+`curl localhost:5000/epochs`
+`curl localhost:5000/epochs/<epoch>`
+`curl localhost:5000/epochs/<epoch>/speed`
 
+## Results:
+The first route curl localhost:5000/ will return all the data in the XML file as a dictionary. Below is an example of what the data returned should look like:
+`
  {
                 "EPOCH": "2023-063T12:00:00.000Z",
                 "X": {
@@ -70,8 +70,9 @@ The first route curl localhost:5000/ will return all the data in the XML file as
     }
   }
 }
-The second route curl localhost:5000/epochs will only display only all the epochs:
-
+`
+The second route `curl localhost:5000/epochs` will only display only all the epochs:
+`
 "2023-063T11:19:00.000Z",
   "2023-063T11:23:00.000Z",
   "2023-063T11:27:00.000Z",
@@ -84,9 +85,9 @@ The second route curl localhost:5000/epochs will only display only all the epoch
   "2023-063T11:55:00.000Z",
   "2023-063T11:59:00.000Z",
   "2023-063T12:00:00.000Z"
-]
-The third route curl localhost:5000/epochs/<epoch> will return the data for one specific epoch data block. When using the command curl localhost:5000/epochs/2023-063T11:27:00.000Z
-
+`
+The third route `curl localhost:5000/epochs/<epoch>` will return the data for one specific epoch data block. When using the command curl localhost:5000/epochs/2023-063T11:27:00.000Z
+`
 {
   "EPOCH": "2023-063T11:27:00.000Z",
   "X": -5254.8392497479,
@@ -96,6 +97,7 @@ The third route curl localhost:5000/epochs/<epoch> will return the data for one 
   "Z": 2961.7924901551,
   "Z_DOT": 5.00312313061336
 }
+`
 The last route will return the velocity calculated at the specific epoch. Using the command  curl localhost:5000/epochs/2023-063T11:27:00.000Z/speed, the following is returned: 7.6680500515795895ISS Tracker Project:
 
 ## Objective:
