@@ -128,7 +128,7 @@ The route `curl localhost:5000/epochs/<epoch>/speed` will return the velocity ca
 
 `curl localhost:5000/post-data` will return the entire data set taken from the XML file, while `curl localhost:5000/delete-data` will delete the data.
 
-`curl localhost:5000/comments` will return the comments in the XML file while `header` and `metadata` will return the key values in the header and metadata dictionary respectively. 
+`curl localhost:5000/comments` will return the comments in the XML file while `/header` and `/metadata` will return the key values in the header and metadata dictionary respectively. 
 
 
 

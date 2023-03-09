@@ -1,0 +1,14 @@
+---
+version: "3"
+
+services:
+    flask-app:
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        ports:
+           - 5000:5000
+        image: csoney017/tracking_iss:midterm
+        volumes:
+            - ./config.yaml:/config.yaml
+

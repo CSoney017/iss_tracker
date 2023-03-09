@@ -145,39 +145,40 @@ def location(epoch) -> dict:
  """
 
  data = stateVectors(epoch) # will automatically specify into given epoch
+ print("data")
+ print(data)
  MER = 6371 # kilometers
 
- if epoch >= len(data):
-   return "Error: Specified epoch value is not included in data"
+ if len(data) > 0: # epoch exists
 
- x = data['X']['#text']
- y = data['Y']['#text']
- z = data['Z']['#text']
+  x = data[epoch]['X']
+  y = data['Y']['#text']
+  z = data['Z']['#text']
 
- hrs = data[epoch]['EPOCH'][9:11]
- mins = data[epoch]['EPOCH'][12:14]
+  hrs = data[epoch]['EPOCH'][9:11]
+  mins = data[epoch]['EPOCH'][12:14]
 
- alt = math.sqrt(x**2 + y**2 + z**2) - MER
+  alt = math.sqrt(x**2 + y**2 + z**2) - MER
 
- lon = math.degrees(math.atan2(y,x)) - ((hrs-12) + (mins/60))*(360/24) + 24
- lat = math.degrees(math.atan2(z, math.sqrt(x**2 + y**2)))
+  lon = math.degrees(math.atan2(y,x)) - ((hrs-12) + (mins/60))*(360/24) + 24
+  lat = math.degrees(math.atan2(z, math.sqrt(x**2 + y**2)))
 
- if (lon > 180):
-   lon = lon - 360
- elif (long < -180):
-   lon = lon + 360
+  if (lon > 180):
+    lon = lon - 360
+  elif (long < -180):
+    lon = lon + 360
 
- geoposition = geocoder.reverse( (lat,lon), zoom = 10, language = 'en')
+  geoposition = geocoder.reverse( (lat,lon), zoom = 10, language = 'en')
 
- if (geoposition is None):
- geoposition = "Geolocation is unknown; ISS is potentially above ocean"
+  if (geoposition is None):
+    geoposition = "Geolocation is unknown; ISS is potentially above ocean"
 
- location = {} # creating dict to store lat, long, alt, and geo
+  location = {} # creating dict to store lat, long, alt, and geo
 
- location['LATITUDE'] = lat
- location['LONGITUDE'] = lon
- location['ALTITUDE'] = alt
- location['GEOPOSITION'] = geoposition
+  location['LATITUDE'] = lat
+  location['LONGITUDE'] = lon
+  location['ALTITUDE'] = alt
+  location['GEOPOSITION'] = geoposition
 
  return location
 
@@ -228,9 +229,14 @@ def help() -> str:
  message += "[/epochs] = returns list of all epochs in data\n\n"
  message += "[/epochs/<epoch>] = returns data at specified epoch\n\n"
  message += "[/epochs/<epoch>/speed] = returns speed calculated at given epoch\n\n"
+ message += "[/epochs/<epoch>/location] = returns latitude, longitude, altitude, and geoposition for specified epoch"
  message += "[/help] = returns information regarding routes\n\n"
  message += "[/delete-data] = deletes data\n\n"
  message += "[/post-data] = restores data to ISS dictionary\n\n"
+ message += "[/now] = returns latitude, longitude, altitude, and geoposition for most recent epoch\n\n"
+ message += "[/comments] = returns comments imported from data source\n\n"
+ message += "[/headers] = returns headers imported from data source\n\n"
+ message += "[/metadata] = returns information under metadata section of data source file\n\n"
 
  return message
 
@@ -243,9 +249,7 @@ def delete_data() -> dict:
    Returns:
      data(dict): returns empty dictionary
  """
- global data
  data.clear()
- print("data has been cleared")
  return data
 
 @app.route('/post-data', methods = ['POST'])
@@ -277,7 +281,7 @@ def comment_list() -> list:
 
  return data
 
-@app.route('/header', methods = ['GET'])
+@app.route('/headers', methods = ['GET'])
 def header_only() -> dict:
  """
  Returns the header dictionary object from ISS data
@@ -287,9 +291,9 @@ def header_only() -> dict:
    headers(dict): dictionary containing data from header section of ISS data
  """
  iss_data = get_data()
- data = iss_data['ndm']['oem']['header']
+ iss_data = iss_data['ndm']['oem']['header']
 
- return data
+ return iss_data
 
 @app.route('/metadata', methods = ['GET'])
 def metadata() -> dict:
