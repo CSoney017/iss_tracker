@@ -148,10 +148,11 @@ def location(epoch) -> dict:
  print("data")
  print(data)
  MER = 6371 # kilometers
+ location_data = {} # creating dict to store lat, long, alt, and geo
 
  if len(data) > 0: # epoch exists
 
-  x = data[epoch]['X']
+  x = data[epoch]['X'] # initializing x to the x-position of the epoch
   y = data['Y']['#text']
   z = data['Z']['#text']
 
@@ -160,25 +161,28 @@ def location(epoch) -> dict:
 
   alt = math.sqrt(x**2 + y**2 + z**2) - MER
 
-  lon = math.degrees(math.atan2(y,x)) - ((hrs-12) + (mins/60))*(360/24) + 24
   lat = math.degrees(math.atan2(z, math.sqrt(x**2 + y**2)))
+  lon = math.degrees(math.atan2(y,x)) - ((hrs-12) + (mins/60))*(360/24) + 24
 
+ # changing signs of longitude coordinate
   if (lon > 180):
     lon = lon - 360
   elif (long < -180):
     lon = lon + 360
-
+ #zooming in on exact position of ISS above earth
   geoposition = geocoder.reverse( (lat,lon), zoom = 10, language = 'en')
 
+ #if ISS is over ocean
   if (geoposition is None):
     geoposition = "Geolocation is unknown; ISS is potentially above ocean"
 
-  location = {} # creating dict to store lat, long, alt, and geo
+  location_data['LATITUDE'] = lat
+  location_data['LONGITUDE'] = lon
+  location_data['ALTITUDE'] = alt
+  location_data['GEOPOSITION'] = geoposition
 
-  location['LATITUDE'] = lat
-  location['LONGITUDE'] = lon
-  location['ALTITUDE'] = alt
-  location['GEOPOSITION'] = geoposition
+ else: # will return empty location dictionary
+   print("specified epoch does not exist.")
 
  return location
 
@@ -210,7 +214,7 @@ def real_time() -> dict:
 
  now['closest epoch'] = close_epoch['EPOCH']
  now['time_difference'] = minimum
- now['location'] = location(close_epoch['EPOCH'])
+ now['location'] = location(close_epoch['EPOCH']) # calling location route/function
  now['speed'] = speed(close_epoch['EPOCH'])
 
  return now
