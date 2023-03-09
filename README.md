@@ -122,6 +122,17 @@ The route `curl localhost:5000/epochs/<epoch>/speed` will return the velocity ca
 
 `curl localhost:5000/help` will return comments detailing each route and its purpose, similar to this README. 
 
+Here is an example of what it should return:
+```
+[/now] = returns latitude, longitude, altitude, and geoposition for most recent epoch
+
+[/comments] = returns comments imported from data source
+
+[/headers] = returns headers imported from data source
+
+[/metadata] = returns information under metadata section of data source file
+```
+
 `curl localhost:5000/epochs/<epochs>/location` will return the latitude, longitude, altitude, and geoposition for the specified epoch. 
 
 `curl localhost:5000/now` will return the latitude, longitude, altitude, and geoposition for the most recent epoch. 
@@ -129,6 +140,65 @@ The route `curl localhost:5000/epochs/<epoch>/speed` will return the velocity ca
 `curl localhost:5000/post-data` will return the entire data set taken from the XML file, while `curl localhost:5000/delete-data` will delete the data.
 
 `curl localhost:5000/comments` will return the comments in the XML file while `/header` and `/metadata` will return the key values in the header and metadata dictionary respectively. 
+
+/comments route:
+```
+[
+  "Units are in kg and m^2",
+  "MASS=473291.00",
+  "DRAG_AREA=1421.50",
+  "DRAG_COEFF=2.80",
+  "SOLAR_RAD_AREA=0.00",
+  "SOLAR_RAD_COEFF=0.00",
+  "Orbits start at the ascending node epoch",
+  "ISS first asc. node: EPOCH = 2023-03-08T12:50:10.295 $ ORBIT = 2617 $ LAN(DEG) = 108.61247",
+  "ISS last asc. node : EPOCH = 2023-03-23T11:58:44.947 $ ORBIT = 2849 $ LAN(DEG) = 32.65474",
+  "Begin sequence of events",
+  "TRAJECTORY EVENT SUMMARY:",
+  null,
+  "|       EVENT        |       TIG        | ORB |   DV    |   HA    |   HP    |",
+  "|                    |       GMT        |     |   M/S   |   KM    |   KM    |",
+  "|                    |                  |     |  (F/S)  |  (NM)   |  (NM)   |",
+  "=============================================================================",
+  "GMT067 Reboost        067:19:47:00.000             0.6     428.1     408.4",
+  "(2.0)   (231.1)   (220.5)",
+  null,
+  "Crew05 Undock         068:22:00:00.000             0.0     428.7     409.6",
+  "(0.0)   (231.5)   (221.2)",
+  null,
+  "SpX27 Launch          074:00:30:00.000             0.0     428.3     408.7",
+  "(0.0)   (231.2)   (220.7)",
+  null,
+  "SpX27 Docking         075:12:00:00.000             0.0     428.2     408.6",
+  "(0.0)   (231.2)   (220.6)",
+  null,
+  "=============================================================================",
+  "End sequence of events"
+]
+```
+
+/header route:
+```
+{
+  "CREATION_DATE": "2023-067T21:02:49.080Z",
+  "ORIGINATOR": "JSC"
+}
+```
+
+/metadata route:
+```
+{
+  "CENTER_NAME": "EARTH",
+  "OBJECT_ID": "1998-067-A",
+  "OBJECT_NAME": "ISS",
+  "REF_FRAME": "EME2000",
+  "START_TIME": "2023-067T12:00:00.000Z",
+  "STOP_TIME": "2023-082T12:00:00.000Z",
+  "TIME_SYSTEM": "UTC"
+}
+```
+
+
 
 
 
