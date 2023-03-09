@@ -1,10 +1,17 @@
 import requests
 import xmltodict
 import math
+import geopy
+import json
+import time
 
 from flask import Flask, request
+from geopy.geocoders import Nominatim
 
 app = Flask(__name__)
+
+geocoder = Nominatim(user_agent = 'iss_tracker')
+# MER = 6378.1 # Mean Earth Radius in terms on kilomenters
 
 response = requests.get(url = 'https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
 
@@ -126,6 +133,86 @@ def calc_speed(epoch) -> str:
 
    else:
      return "Error"
+
+@app.route('/epochs/<epoch>/location', methods = ['GET'])
+def location(epoch) -> dict:
+ """
+ Returns longitude, latitude, altitude, and geoposition for given epoch
+ Args:
+   epoch(str): a specified epoch
+ Returns:
+   location(dict): a dictionary containing longitude, latitude, altitude, and geoposition
+ """
+
+ data = stateVectors(epoch) # will automatically specify into given epoch
+ MER = 6371 # kilometers
+
+ if epoch >= len(data):
+   return "Error: Specified epoch value is not included in data"
+
+ x = data['X']['#text']
+ y = data['Y']['#text']
+ z = data['Z']['#text']
+
+ hrs = data[epoch]['EPOCH'][9:11]
+ mins = data[epoch]['EPOCH'][12:14]
+
+ alt = math.sqrt(x**2 + y**2 + z**2) - MER
+
+ lon = math.degrees(math.atan2(y,x)) - ((hrs-12) + (mins/60))*(360/24) + 24
+ lat = math.degrees(math.atan2(z, math.sqrt(x**2 + y**2)))
+
+ if (lon > 180):
+   lon = lon - 360
+ elif (long < -180):
+   lon = lon + 360
+
+ geoposition = geocoder.reverse( (lat,lon), zoom = 10, language = 'en')
+
+ if (geoposition is None):
+ geoposition = "Geolocation is unknown; ISS is potentially above ocean"
+
+ location = {} # creating dict to store lat, long, alt, and geo
+
+ location['LATITUDE'] = lat
+ location['LONGITUDE'] = lon
+ location['ALTITUDE'] = alt
+ location['GEOPOSITION'] = geoposition
+
+ return location
+
+@app.route('/now', methods = ['GET'])
+def real_time() -> dict:
+ """
+ Returns ISS location for epoch closest to real-time
+ Args:
+  None
+ Returns:
+   now(dict): dictionary returning latitude, longitude, altitude, and geoposition
+ """
+
+ iss_data = epochs_only()
+
+ time_now = time.time()         # gives present time in seconds since unix epoch
+ time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S'))        # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
+ difference = time_now - time_epoch
+
+ for epoch in iss_data:
+   time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S'))        # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
+   difference = time_now - time_epoch
+
+   if abs(difference) < abs(minimum):
+     minimum = difference
+     close_epoch = epoch
+
+ now = {}
+
+ now['closest epoch'] = close_epoch['EPOCH']
+ now['time_difference'] = minimum
+ now['location'] = location(close_epoch['EPOCH'])
+ now['speed'] = speed(close_epoch['EPOCH'])
+
+ return now
 
 @app.route('/help',  methods = ['GET'])
 def help() -> str:
