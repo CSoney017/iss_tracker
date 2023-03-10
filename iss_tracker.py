@@ -77,16 +77,21 @@ def epochs_only() -> list:
    except typeError:
      return "Error: Please enter an integer"
 
- count = 0 # how many epochs were printed out -- limit
+ # count = 0 # how many epochs were printed out -- limit
 
  for ii in data:
-   while (count <= limit):
+   if(offset > 0):
+     offset = offset - 1
+     continue # loop will skip to next iteration
+   epochs.append(ii['EPOCH']) # inserting epoch into list
+   if(len(epochs) >= limit):
+     break
+    #while (count <= limit):
     # ii = int(ii)
-    print(ii)
-    epochs.append(ii['EPOCH']) # inserting epoch into list
+    #print(ii)
     # epochs is a list; append is a function for a list
     # ii should be a str but to append you need a int?
-    count += 1
+    #count += 1
  return epochs
 
 @app.route('/epochs/<epoch>', methods = ['GET'])
@@ -145,8 +150,8 @@ def location(epoch) -> dict:
  """
 
  data = stateVectors(epoch) # will automatically specify into given epoch
- print("data")
- print(data)
+ # print("data")
+ # print(data)
  MER = 6371 # kilometers
  location_data = {} # creating dict to store lat, long, alt, and geo
 
@@ -184,7 +189,8 @@ def location(epoch) -> dict:
  else: # will return empty location dictionary
    print("specified epoch does not exist.")
 
- return location
+ return location_data
+
 
 @app.route('/now', methods = ['GET'])
 def real_time() -> dict:
@@ -196,11 +202,13 @@ def real_time() -> dict:
    now(dict): dictionary returning latitude, longitude, altitude, and geoposition
  """
 
- iss_data = epochs_only()
+ iss_data = epochs_only() #function, calling all epochs
 
  time_now = time.time()         # gives present time in seconds since unix epoch
- time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S')) # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
- difference = time_now - time_epoch
+ # time_epoch = time.mktime(time.strptime(iss_data[:-5], '%Y-%jT%H:%M:%S')) # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
+ # difference = time_now - time_epoch
+
+ minimum = 1000000
 
  for epoch in iss_data:
    time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S')) # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
@@ -209,13 +217,13 @@ def real_time() -> dict:
    if abs(difference) < abs(minimum):
      minimum = difference
      close_epoch = epoch
-
+ print(close_epoch)
  now = {}
 
- now['closest epoch'] = close_epoch['EPOCH']
+ now['closest_epoch'] = close_epoch
  now['time_difference'] = minimum
- now['location'] = location(close_epoch['EPOCH']) # calling location route/function
- now['speed'] = speed(close_epoch['EPOCH'])
+ now['location'] = location(close_epoch) # calling location route/function
+ now['speed'] = calc_speed(close_epoch)
 
  return now
 
