@@ -37,8 +37,8 @@ curl localhost:5000/now
 Use the `docker pull <container>` command to pull the specified docker image from Docker Hub. 
 
 ### Dockerfile:
-Another way to run this project is to build your own image using the Dockerfile provided in this repository. Use the command `docker build -t <username>/iss_tracker:midterm`. Replace <username> with your Docker Hub username. Run the image with 
- `docker run -it --rm -p 5000:5000<username/iss_tracker:midterm`.
+Another way to run this project is to build your own image using the Dockerfile provided in this repository. Use the command `docker build -t <username>/iss_tracker:midterm . `. Replace <username> with your Docker Hub username. Run the image with 
+ `docker run -it --rm -p 5000:5000 <username>/iss_tracker:midterm . `.
 
 Results:
 The first route `curl localhost:5000/` will return all the data in the XML file as a dictionary. Below is an example of what the data returned should look like:
