@@ -152,22 +152,22 @@ def location(epoch) -> dict:
 
  if len(data) > 0: # epoch exists
 
-  x = data[epoch]['X'] # initializing x to the x-position of the epoch
-  y = data['Y']['#text']
-  z = data['Z']['#text']
+  x = data['X'] # initializing x to the x-position of the epoch
+  y = data['Y']
+  z = data['Z']
 
-  hrs = data[epoch]['EPOCH'][9:11]
-  mins = data[epoch]['EPOCH'][12:14]
+  hrs = int(data['EPOCH'][9:11])
+  mins = int(data['EPOCH'][12:14])
 
   alt = math.sqrt(x**2 + y**2 + z**2) - MER
 
   lat = math.degrees(math.atan2(z, math.sqrt(x**2 + y**2)))
-  lon = math.degrees(math.atan2(y,x)) - ((hrs-12) + (mins/60))*(360/24) + 24
+  lon = math.degrees(math.atan2(y,x))- (hrs-12) + (mins/60)*(360/24) + 24
 
  # changing signs of longitude coordinate
   if (lon > 180):
     lon = lon - 360
-  elif (long < -180):
+  elif (lon < -180):
     lon = lon + 360
  #zooming in on exact position of ISS above earth
   geoposition = geocoder.reverse( (lat,lon), zoom = 10, language = 'en')
@@ -199,11 +199,11 @@ def real_time() -> dict:
  iss_data = epochs_only()
 
  time_now = time.time()         # gives present time in seconds since unix epoch
- time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S'))        # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
+ time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S')) # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
  difference = time_now - time_epoch
 
  for epoch in iss_data:
-   time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S'))        # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
+   time_epoch = time.mktime(time.strptime(epoch[:-5], '%Y-%jT%H:%M:%S')) # gives epoch (eg 2023-058T12:00:00.000Z) time in seconds since unix epoch
    difference = time_now - time_epoch
 
    if abs(difference) < abs(minimum):
